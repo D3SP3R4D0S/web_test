@@ -1,5 +1,89 @@
-<div>
-    <h1>
-        이게 바디래
-    </h1>
+<div class="row my-5">
+    <div class="col">
+        <div class="row mb-2 justify-content-end">
+            <div class="col-5 col-md-4 col-lg-3">
+                <form name="frm">
+                    <div class="input-group">
+                        <input class="form-control" name="query" type="text" id="searchval">
+                        <button class="btn btn-primary" type="button" onclick=getBooks($("#searchval").val())>
+                            검색
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="row" id="div_books"></div>
+    </div>
+    <div>
+        <button id="previous" class="btn btn-primary" disabled>이전</button>
+<!--        <button class="btn btn-primary">1/10</button>-->
+        <span class="mx-2" id="pageno"></span>
+        <button id="next" class="btn btn-primary" disabled>다음</button>
+    </div>
 </div>
+<script type="x-handlebars-template" id="temp_books">
+    {{#each documents}}
+        <div class="col-6 col-md-4 col-lg-3 col-xl-2">
+            <div class="card mb-2">
+                <div class="card-body">
+                    <img src="{{thumbnail}}">
+                    <div class="ellipsis">{{title}}</div>
+                </div>
+                <div class="card-footer">{{price}} KRW</div>
+            </div>
+        </div>
+    {{/each}}
+</script>
+<script>
+    let search_val=$(frm.query).val();
+    let page = 1
+    $(frm).on("submit", function(e){
+        e.preventDefault()
+        search_val=$(frm.query).val();
+        getBooks(search_val);
+    });
+    $("#next").on("click", function(){
+        page +=1;
+        getBooks()
+    })
+    $("#previous").on("click", function(){
+        page -=1;
+        getBooks()
+    })
+
+    getBooks();
+    function getBooks(){
+
+        $.ajax({
+            url:"https://dapi.kakao.com/v3/search/book",
+            type:"get",
+            headers:{
+                "Authorization":"KakaoAK 00cb01fce3abc246db695150704d7a21"
+            },
+            data:{
+                query:search_val,
+                page:page,
+                size:6
+            },
+            success:(data)=>{
+                console.log(data);
+                let temp = Handlebars.compile($("#temp_books").html());
+                $("#div_books").html(temp(data));
+                $("#pageno").text(page + "/" + Math.ceil(data.meta.pageable_count/5))
+                if(page == 1){
+                    $("#previous").attr("disabled", true)
+                }else{
+                    $("#previous").attr("disabled", false)
+                }
+                if(data.meta.is_end){
+                    $("#next").attr("disabled", true)
+                }else{
+                    $("#next").attr("disabled", false)
+                }
+            }
+        })
+    }
+
+</script>
