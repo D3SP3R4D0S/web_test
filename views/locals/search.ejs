@@ -16,7 +16,7 @@
             <span class="mx-3" id="span_page">1/10</span>
             <button class="btn btn-primary" id="next">다음</button>
         </div>
-        <div id="map" style="width:100;height:400px;" class="my-5"></div>
+        <div id="map" style="width:100%; height:400px;" class="my-5"></div>
     </div>
 </div>
 <script type="x-handlebars-template" id="temp_locals">
@@ -26,10 +26,11 @@
             <td class="place">{{place_name}}</td>
             <td>{{address_name}}</td>
             <td class="phone">{{phone}}</td>
-            <td><button class="btn btn-primary location" x="{{x}}" y="{{y}}">위치보기</button></td>
+<!--            <td><button class="btn btn-primary location" x="{{x}}" y="{{y}}">위치보기</button></td>-->
         </tr>
         {{/each}}
         </tr>
+    </table>
 </script>
 
 <script>
