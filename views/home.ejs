@@ -2,7 +2,12 @@
     div img{
         cursor: pointer;
     }
+    #div_books .bi-cart {
+        cursor: pointer;
+        color: green;
+    }
 </style>
+
 <div class="row my-5">
     <div class="col">
         <div class="row mb-2 justify-content-end">
@@ -28,6 +33,7 @@
         <button id="next" class="btn btn-primary" disabled>다음</button>
     </div>
 </div>
+<!--도서정보-->
 <script type="x-handlebars-template" id="temp_books">
     {{#each documents}}
         <div class="col-6 col-md-4 col-lg-3 col-xl-2">
@@ -36,15 +42,44 @@
                     <img src="{{chkImage thumbnail}}" index="{{@index}}">
                     <div class="ellipsis">{{title}}</div>
                 </div>
-                <div class="card-footer">{{fmtPrice price}} KRW</div>
+                <div class="card-footer">
+                    <div>
+                        <span style="font-size:0.6rem;">{{fmtPrice price}}</span>
+                        <i class="bi bi-cart float-end" book="{{book @this}}">카트</i>
+                    </div>
+                </div>
             </div>
         </div>
         <%-include("./books/modal.ejs")%>
     {{/each}}
 </script>
-<script>
+
+<script type="module">
+    import { app } from "/javascripts/firebaseInit.js";
+    import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-database.js";
+    const db = getDatabase(app);
+
     let search_val=$("#searchval").val();
     let page = 1
+
+    $("#div_books").on("click", ".bi-cart", async function() {
+        if(!sessionStorage.getItem("email")) {
+            location.href="/users/login";
+        } else {
+            const book=JSON.parse($(this).attr("book"));
+            console.log(book);
+            const ref_book = `cart/${sessionStorage.getItem("uid")}/${book.isbn}`;
+
+            const snapshot = await get(ref(db, ref_book));
+            if(snapshot.val()) {
+                alert("이미 장바구니에 담긴 도서입니다.");
+            } else {
+                if(!confirm("장바구니에 저장합니다.")) return;
+                set(ref(db, ref_book), book);
+                alert("장바구니에 추가되었습니다.");
+            }
+        }
+    })
 
     $("#div_books").on("click", "img", function(){
         let index=$(this).attr("index")
@@ -112,5 +147,9 @@
 
     Handlebars.registerHelper("fmtPrice", function(price){
         return price.toLocaleString() + " 원";
+    });
+
+    Handlebars.registerHelper("book", function(book){
+        return JSON.stringify(book);
     });
 </script>
