@@ -1,0 +1,75 @@
+<div class="row my-5">
+    <div class="col">
+        <h1 class="text-center mb-5">장바구니</h1>
+        <div id="div_cart"></div>
+    </div>
+</div>
+<!--장바구니 템플릿-->
+<script id="temp_cart" type="text/x-handlebars-template">
+    <table class="table table-sm">
+        <thead>
+            <tr>
+                <th>타이틀</th>
+                <th>저자</th>
+                <th>단가</th>
+                <th>퍼블리셔</th>
+                <th>제거</th>
+            </tr>
+        </thead>
+        <tbody>
+        {{#each .}}
+            <tr>
+                <td>{{title}}</td>
+                <td>{{authors}}</td>
+                <td>{{price}}</td>
+                <td>{{publisher}}</td>
+                <td><button class="btn btn-danger btn-sm btn-remove" isbn="{{isbn}}">삭제</button></td>
+            </tr>
+        {{/each}}
+        </tbody>
+    </table>
+</script>
+<script>
+    Handlebars.registerHelper("chk_thumbnail", function(thumbnail){
+        if(!thumbnail) {
+            return "http://via.placeholder.com/120x150";
+        }else {
+            return thumbnail;
+        }
+    });
+    Handlebars.registerHelper("fmt_price", function(price){
+        if(price) return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') + '원';
+    });
+</script>
+<script type="module">
+    import { app } from "/javascripts/firebaseInit.js";
+    import { getDatabase, ref, onValue, remove } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-database.js";
+    const db = getDatabase(app);
+    const uid=sessionStorage.getItem('uid');
+    console.log(uid)
+
+    //장바구니 목록
+    onValue(ref(db, `cart/${uid}`), snapshot=>{
+        let rows=[];
+        snapshot.forEach(row=>{
+            rows.push({ key:row.key, ...row.val() });
+        });
+        //console.log(rows);
+        let temp=Handlebars.compile($("#temp_cart").html());
+        $("#div_cart").html(temp(rows));
+    });
+
+    //장바구니에서 제거
+    $("#div_cart").on("click", ".btn-remove", async function(){
+        let isbn=$(this).attr("isbn");
+        if(confirm(isbn + ' 장바구니에서 제거 하시겠습니까?')){
+            await remove(ref(db, `cart/${uid}/${isbn}`));
+        }
+    });
+
+    $("#div_cart").on("click", ".btn-success", function(){
+        let index=$(this).attr("index")
+        $("#modal" + index).modal("show");
+    });
+
+</script>
