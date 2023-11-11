@@ -5,6 +5,7 @@
             <div class="text-center mb-4">
                 <img id="photo" src="http://via.placeholder.com/100x100" style="cursor: pointer; width:200px; height: 200px; border-radius: 200px">
                 <input id="file" type="file" style="display: none;">
+                <button id="btn-image" class="btn btn-primary w-50">이미지저장</button>
             </div>
             <form name="frm" class="card p-3">
                 <div class="input-group mb-2">
@@ -31,10 +32,14 @@
 <script type="module">
     import { app } from "/javascripts/firebaseinit.js";
     import { getFirestore, setDoc, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
+
+    import { getStorage,uploadBytes,ref,getDownloadURL } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-storage.js";
     const db = getFirestore(app);
-    // const storage=getStorage(app);
+    const storage=getStorage(app);
     const uid=sessionStorage.getItem("uid");
     const email=sessionStorage.getItem("email");
+
+
     let user;
     const snapshot=await getDoc(doc(db, `users/${uid}`));
 
