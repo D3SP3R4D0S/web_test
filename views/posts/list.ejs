@@ -5,14 +5,21 @@
         <div class="col text-end mb-5">
             <button id="btn-insert" class="btn btn-primary">글쓰기</button>
         </div>
+        <div>게시글수:<span id="total"></span></div>
         <hr>
         <div id="div-posts"></div>
+        <div id="pagination" class="text-center">
+            <button id="btn-prev" class="btn btn-primary">이전</button>
+            <span id="span-page" class="mx-3">1/10</span>
+            <button id="btn-next" class="btn btn-primary">다음</button>
+        </div>
     </div>
 </div>
 <script id="temp-posts" type="x-handlebars-templates">
     <table class="table table-hover">
         <thead>
             <tr class="bg-dark text-white fw-bold">
+                <th>Index</th>
                 <th>Title</th>
                 <th>E-mail</th>
                 <th>Date</th>
@@ -21,7 +28,8 @@
         <tbody>
             {{#each .}}
                 <tr>
-                    <td>{{title}}</td>
+                    <td>{{index}}</td>
+                    <td><a href="posts/read?id={{id}}">{{title}}</a></td>
                     <td>{{email}}</td>
                     <td>{{date}}</td>
                 </tr>
@@ -43,20 +51,20 @@
     //게시글 목록
     getPosts();
     async function getPosts() {
-        const q = query(collection(db, 'posts'), orderBy("date", "desc"));
+        const q = query(collection(db, 'posts'), orderBy("date", "asc"));
         const snapshot = await getDocs(q);
-        //console.log(snapshot.docs);
-        let rows=[];
+
         let total=snapshot.docs.length;
         last = Math.ceil(total/size);
         $("#total").html(total);
+        let rows=[];
 
-        await snapshot.docs.forEach(async(row, index)=>{
-            //console.log(row.id, row.data());
+        await snapshot.docs.forEach((doc, index)=>{
+            // console.log(row.id, row.data());
             const start = (page-1)*size;
             const end = (page*size)-1;
             if(index>=start && index<=end){
-                rows.push({id:row.id, ...row.data()});
+                rows.push({index:index+1, id:doc.id, ...doc.data()});
             }
         });
         //console.log(rows);
