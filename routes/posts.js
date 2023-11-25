@@ -11,9 +11,21 @@ router.get('/insert', function(req, res){
     res.render('index', {title:'글쓰기', pageName:'posts/insert.ejs'});
 })
 
-router.get('/read', function(req, res){
-    const {id} = req.query
-    res.render('index', {title:'게시글정보', pageName:'posts/read.ejs', id});
+// router.get('/read', function(req, res){
+//     const {id} = req.query
+//     res.render('index', {title:'게시글정보', pageName:'posts/read.ejs', id});
+// });
+
+//게시글읽기
+router.get('/read/:id', function(req, res){
+    const id=req.params.id;
+    res.render('index', {title: '게시글정보', pageName: 'posts/read.ejs', id});
+});
+
+//게시글수정
+router.get('/update/:id', function(req, res){
+    const id=req.params.id;
+    res.render('index', {title: '게시글수정', pageName: 'posts/update.ejs', id});
 });
 
 module.exports = router;

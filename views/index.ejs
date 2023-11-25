@@ -22,5 +22,17 @@
         <%-include('footer')%>
       </div>
     </div>
+    <div id="loading" class="text-center">
+      <div id="spinner" class="spinner-border text-primary" role="status"></div>
+    </div>
+    <%-include("common/alert.ejs")%>
+    <%-include("common/confirm.ejs")%>
   </body>
 </html>
+<script>
+  $(document).on("ready", function() {
+    setTimeout(function() {
+      $("#loading").hide();
+    }, 500);
+  });
+</script>

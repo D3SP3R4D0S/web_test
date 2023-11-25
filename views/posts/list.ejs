@@ -29,7 +29,7 @@
             {{#each .}}
                 <tr>
                     <td>{{index}}</td>
-                    <td><a href="posts/read?id={{id}}">{{title}}</a></td>
+                    <td><a href="posts/read/{{id}}">{{title}}</a></td>
                     <td>{{email}}</td>
                     <td>{{date}}</td>
                 </tr>
@@ -63,8 +63,9 @@
             // console.log(row.id, row.data());
             const start = (page-1)*size;
             const end = (page*size)-1;
-            if(index>=start && index<=end){
-                rows.push({index:index+1, id:doc.id, ...doc.data()});
+            if(index>=start && index<=end) {
+                rows.push({index: index + 1, id: doc.id, ...doc.data()});
+                // rows.push({index:index+1, id:row.id, ...row.data()});
             }
         });
         //console.log(rows);
